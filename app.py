@@ -1,8 +1,6 @@
 import streamlit as st
 import pandas as pd
 import numpy as np
-from scipy import stats
-import matplotlib.pyplot as plt
 
 # Konfigurasi Halaman Streamlit
 st.set_page_config(
@@ -16,7 +14,7 @@ if 'started' not in st.session_state:
     st.session_state.started = False
 
 # ==========================================
-# HALAMAN DEPAN
+# HALAMAN DEPAN / LANDING PAGE
 # ==========================================
 if not st.session_state.started:
     st.markdown("<h1 style='text-align: center;'>Kalkulator Pengukuran Kadar Thiamin dalam Sampel menggunakan Spektrofotometer UV-Vis</h1>", unsafe_allow_html=True)
@@ -41,7 +39,7 @@ else:
             st.session_state.started = False
             st.rerun()
         st.divider()
-        st.info("Gunakan tab di kanan untuk mengakses setiap fitur perhitungan.")
+        st.info("Gunakan tab di atas untuk mengakses setiap fitur perhitungan.")
 
     st.title("🧪 Kalkulator Analisis Thiamin (UV-Vis)")
     
@@ -67,13 +65,13 @@ else:
             c_induk_target = st.number_input("Konsentrasi Larutan Induk Thiamin (mg/L)", min_value=0.0, value=100.0, step=10.0, key="c_induk_t1")
             v_induk_target = st.number_input("Volume (L)", min_value=0.0, value=1.0, step=0.1, key="v_induk_t1")
         
-        # Rumus: konsentrasi larutan induk (mg/L) * volume (L) = gram
-        bobot_thiamin_g = (c_induk_target * v_induk_target) 
+        # Rumus: konsentrasi larutan induk (mg/L) * volume (L) / 1000 = gram
+        bobot_thiamin_g = (c_induk_target * v_induk_target) / 1000.0
         
         with col2:
             st.subheader("Hasil Perhitungan:")
-            st.number_input("Bobot Standar Thiamin (g)", value=float(bobot_thiamin_g), format="%.2f", disabled=True)
-            st.info(f"💡 **Petunjuk:** Timbang **{bobot_thiamin_g:.2f} gram** Thiamin murni kemudian dilarutkan dalam labu takar hingga volume **{v_induk_target} L**.")
+            st.number_input("Bobot Standar Thiamin (g)", value=float(bobot_thiamin_g), format="%.4f", disabled=True)
+            st.info(f"💡 **Petunjuk:** Timbang **{bobot_thiamin_g:.4f} gram** Thiamin murni dan larutkan dalam labu ukur hingga volume **{v_induk_target} L**.")
 
     # ------------------------------------------
     # FITUR 2: Pembuatan Larutan Standar Thiamin
@@ -162,9 +160,12 @@ else:
             x = df_input_abs['Konsentrasi Deret Standar (mg/L)'].values
             y = df_input_abs['Absorbansi'].values
             
-            # Perhitungan Regresi Linier
+            # Perhitungan Regresi Linier menggunakan NumPy (tanpa SciPy)
             if len(x) >= 2:
-                slope, intercept, r_value, p_value, std_err = stats.linregress(x, y)
+                # np.polyfit mengembalikan [slope, intercept] untuk derajat 1
+                slope, intercept = np.polyfit(x, y, 1)
+                # Menghitung koefisien korelasi Pearson (r)
+                r_value = np.corrcoef(x, y)[0, 1]
                 r_squared = r_value ** 2
                 
                 st.session_state['slope'] = slope
@@ -179,16 +180,15 @@ else:
                 col_res3.metric("Koefisien Korelasi (r)", f"{r_value:.6f}")
                 col_res4.metric("Koefisien Determinasi (R²)", f"{r_squared:.6f}")
                 
-                # Plot Kurva
-                fig, ax = plt.subplots(figsize=(8, 4))
-                ax.scatter(x, y, color='blue', label='Data Standar')
-                ax.plot(x, intercept + slope * x, color='red', label=f'y = {slope:.4f}x + {intercept:.4f}')
-                ax.set_xlabel('Konsentrasi (mg/L)')
-                ax.set_ylabel('Absorbansi')
-                ax.set_title('Kurva Kalibrasi Thiamin')
-                ax.legend()
-                ax.grid(True, linestyle='--', alpha=0.6)
-                st.pyplot(fig)
+                # Visualisasi grafik menggunakan Streamlit native chart (tanpa Matplotlib)
+                df_chart = pd.DataFrame({
+                    'Konsentrasi (mg/L)': x,
+                    'Absorbansi Aktual': y,
+                    'Regresi Linear': intercept + slope * x
+                }).set_index('Konsentrasi (mg/L)')
+                
+                st.write("Grafik Perbandingan Data Aktual vs Model Regresi:")
+                st.line_chart(df_chart)
             else:
                 st.error("Dibutuhkan minimal 2 data deret standar untuk regresi linier.")
 
@@ -226,8 +226,7 @@ else:
                 # 1. Konsentrasi Terukur (mg/L) = (Abs - Intercept) / Slope
                 c_terukur = (abs_sampel - intercept) / slope if slope != 0 else 0.0
                 
-                # 2. Kadar Thiamin pada Sampel (mg/kg) = (Konsentrasi Terukur (mg/L) * Volume Sampel (L)) / Bobot Sampel (kg)
-                # Volume (mL) -> L (/1000), Bobot (g) -> kg (/1000). Konversi saling menghilangkan, jadi (C * V_mL) / W_g
+                # 2. Kadar Thiamin pada Sampel (mg/kg) = (Konsentrasi Terukur (mg/L) * Volume Sampel (mL)) / Bobot Sampel (g)
                 kadar_mg_kg = (c_terukur * v_sampel) / w_sampel if w_sampel > 0 else 0.0
                 
                 # 3. Kadar Thiamin per Tablet (mg/tablet) = Rerata Bobot Tablet (kg) * Kadar Sampel (mg/kg)
@@ -272,7 +271,7 @@ else:
             
             st.number_input("Rerata Kadar Thiamin (mg/Kg)", value=float(rerata_kadar), format="%.4f", disabled=True)
             
-            if len(kadar_kadar := kadar_list) == 2:
+            if len(kadar_list) == 2:
                 # Hitung %RPD
                 selisih = abs(kadar_list[0] - kadar_list[1])
                 rpd = (selisih / rerata_kadar) * 100 if rerata_kadar > 0 else 0.0
@@ -285,7 +284,7 @@ else:
                     col_rpd2.warning("Presisi Cukup/Kurang (%RPD > 5%)")
                     
             elif len(kadar_list) > 2:
-                # Hitung SD dan %RSD
+                # Hitung SD dan %RSD menggunakan fungsi NumPy
                 sd = np.std(kadar_list, ddof=1) # Sample standard deviation
                 rsd = (sd / rerata_kadar) * 100 if rerata_kadar > 0 else 0.0
                 
@@ -295,8 +294,8 @@ else:
                 if rsd <= 2.0:
                     col_sd3.success("Presisi Tinggi (%RSD ≤ 2%)")
                 elif rsd <= 5.0:
-                    col_sd3.info("Presisi Memenuhi Syarat (%RSD ≤ 5%)")
+                    col_sd3.info("Presisi Diterima (%RSD ≤ 5%)")
                 else:
-                    col_sd3.warning("Presisi Tidak Memenuhi Syarat (%RSD > 5%)")
+                    col_sd3.warning("Presisi Kurang (%RSD > 5%)")
             else:
                 st.info("Masukkan minimal 2 data ulangan untuk menghitung presisi (%RPD atau %RSD).")
