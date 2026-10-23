@@ -1,7 +1,7 @@
 import streamlit as st
 import pandas as pd
 import numpy as np
-import numpy as np
+import scipy as sp
 from scipy import stats
 import matplotlib.pyplot as plt
 
