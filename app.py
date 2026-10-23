@@ -63,15 +63,15 @@ else:
         col1, col2 = st.columns(2)
         with col1:
             c_induk_target = st.number_input("Konsentrasi Larutan Induk Thiamin (mg/L)", min_value=0.0, value=100.0, step=10.0, key="c_induk_t1")
-            v_induk_target = st.number_input("Volume (L)", min_value=0.0, value=1.0, step=0.1, key="v_induk_t1")
+            v_induk_target = st.number_input("Volume (mL)", min_value=0.0, value=1.0, step=0.1, key="v_induk_t1")
         
-        # Rumus: konsentrasi larutan induk (mg/L) * volume (L) / 1000 = gram
-        bobot_thiamin_g = (c_induk_target * v_induk_target) / 1000.0
+        # Rumus: konsentrasi larutan induk (mg/L) * volume (mL) = gram
+        bobot_thiamin_g = (c_induk_target * (v_induk_target/1000))
         
         with col2:
             st.subheader("Hasil Perhitungan:")
             st.number_input("Bobot Standar Thiamin (g)", value=float(bobot_thiamin_g), format="%.4f", disabled=True)
-            st.info(f"💡 **Petunjuk:** Timbang **{bobot_thiamin_g:.4f} gram** Thiamin murni dan larutkan dalam labu ukur hingga volume **{v_induk_target} L**.")
+            st.info(f"💡 **Petunjuk:** Timbang **{bobot_thiamin_g:.4f} gram** Thiamin murni dan larutkan dalam labu takar hingga volume **{v_induk_target} L**.")
 
     # ------------------------------------------
     # FITUR 2: Pembuatan Larutan Standar Thiamin
@@ -91,8 +91,8 @@ else:
         
         with col2:
             st.subheader("Hasil Perhitungan:")
-            st.number_input("Volume Larutan Induk (mL)", value=float(v_induk_dibutuhkan), format="%.4f", disabled=True)
-            st.info(f"💡 Pipet **{v_induk_dibutuhkan:.4f} mL** larutan induk {c_induk_f2} mg/L ke dalam labu ukur **{v_standar_target} mL**, lalu encerkan dengan pelarut hingga tanda batas.")
+            st.number_input("Volume Larutan Induk (mL)", value=float(v_induk_dibutuhkan), format="%.2f", disabled=True)
+            st.info(f"💡 Pipet **{v_induk_dibutuhkan:.2f} mL** larutan induk {c_induk_f2} mg/L ke dalam labu takar **{v_standar_target} mL**, lalu diencerkan dengan pelarut hingga tanda tera.")
 
     # ------------------------------------------
     # FITUR 3: Pembuatan Deret Standar Thiamin
