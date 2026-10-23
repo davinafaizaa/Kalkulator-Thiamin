@@ -175,10 +175,10 @@ else:
                 st.subheader("📊 Hasil Kurva Kalibrasi")
                 
                 col_res1, col_res2, col_res3, col_res4 = st.columns(4)
-                col_res1.metric("Intercept (a)", f"{intercept:.6f}")
-                col_res2.metric("Slope (b)", f"{slope:.6f}")
-                col_res3.metric("Koefisien Korelasi (r)", f"{r_value:.6f}")
-                col_res4.metric("Koefisien Determinasi (R²)", f"{r_squared:.6f}")
+                col_res1.metric("Intercept (a)", f"{intercept:.4f}")
+                col_res2.metric("Slope (b)", f"{slope:.4f}")
+                col_res3.metric("Koefisien Korelasi (r)", f"{r_value:.4f}")
+                col_res4.metric("Koefisien Determinasi (R²)", f"{r_squared:.4f}")
                 
                 # Visualisasi grafik menggunakan Streamlit native chart (tanpa Matplotlib)
                 df_chart = pd.DataFrame({
@@ -204,9 +204,9 @@ else:
             slope = st.session_state['slope']
             intercept = st.session_state['intercept']
             
-            st.info(f"Persamaan Regresi yang Digunakan: **y = {slope:.6f}x + ({intercept:.6f})**")
+            st.info(f"Persamaan Regresi yang Digunakan: **y = {slope:.4f}x + ({intercept:.4f})**")
             
-            rerata_bobot_tablet = st.number_input("Rerata Bobot Tablet (kg)", min_value=0.000001, value=0.0005, format="%.6f", key="bobot_tab")
+            rerata_bobot_tablet = st.number_input("Rerata Bobot Tablet (kg)", min_value=0.000001, value=0.0005, format="%.4f", key="bobot_tab")
             n_pengulangan = st.number_input("Pengulangan (Jumlah Sampel)", min_value=1, max_value=20, value=3, step=1)
             
             results_sampel = []
