@@ -70,8 +70,8 @@ else:
         
         with col2:
             st.subheader("Hasil Perhitungan:")
-            st.number_input("Bobot Standar Thiamin (g)", value=float(bobot_thiamin_g), format="%.4f", disabled=True)
-            st.info(f"💡 **Petunjuk:** Timbang **{bobot_thiamin_g:.4f} gram** Thiamin murni kemudian dilarutkan dalam labu takar hingga volume **{v_induk_target} L**.")
+            st.number_input("Bobot Standar Thiamin (g)", value=float(bobot_thiamin_g), format="%.2f", disabled=True)
+            st.info(f"💡 **Petunjuk:** Timbang **{bobot_thiamin_g:.2f} gram** Thiamin murni kemudian dilarutkan dalam labu takar hingga volume **{v_induk_target} L**.")
 
     # ------------------------------------------
     # FITUR 2: Pembuatan Larutan Standar Thiamin
