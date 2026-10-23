@@ -65,8 +65,8 @@ else:
             c_induk_target = st.number_input("Konsentrasi Larutan Induk Thiamin (mg/L)", min_value=0.0, value=100.0, step=10.0, key="c_induk_t1")
             v_induk_target = st.number_input("Volume (L)", min_value=0.0, value=1.0, step=0.1, key="v_induk_t1")
         
-        # Rumus: konsentrasi larutan induk (mg/L) * volume (L) / 1000 = gram
-        bobot_thiamin_g = (c_induk_target * v_induk_target) / 1000.0
+        # Rumus: konsentrasi larutan induk (mg/L) * volume (L) = gram
+        bobot_thiamin_g = (c_induk_target * v_induk_target) 
         
         with col2:
             st.subheader("Hasil Perhitungan:")
