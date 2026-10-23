@@ -119,7 +119,7 @@ else:
             v_std_dibutuhkan = (c_deret * v_deret) / c_std_pembawa if c_std_pembawa > 0 else 0.0
             
             with col_c:
-                st.number_input(f"Volume Larutan Standar (mL) #{i+1}", value=float(v_std_dibutuhkan), format="%.4f", disabled=True, key=f"v_std_out_{i}")
+                st.number_input(f"Volume Larutan Standar (mL) #{i+1}", value=float(v_std_dibutuhkan), format="%.2f", disabled=True, key=f"v_std_out_{i}")
             
             data_deret.append({
                 "Deret Ke-": i+1,
