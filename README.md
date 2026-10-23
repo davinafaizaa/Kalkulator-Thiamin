@@ -18,8 +18,3 @@ Aplikasi berbasis web menggunakan **Streamlit** untuk mempermudah perhitungan la
    git clone [https://github.com/davinafaizaa/kalkulator-thiamin.git](https://github.com/username/kalkulator-thiamin.git)
    cd kalkulator-thiamin
    python -m venv venv
-   source venv/bin/activate  # Untuk Linux/Mac
-   # atau
-   venv\Scripts\activate     # Untuk Windows
-   pip install -r requirements.txt
-   streamlit run app.py
